@@ -7,6 +7,9 @@
 // DISCLAIMER: This is a copied version of https://github.com/googleapis/js-genai/blob/main/src/chats.ts with the intention of working around a key bug
 // where function responses are not treated as "valid" responses: https://b.corp.google.com/issues/420354090
 
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import type {
   GenerateContentResponse,
   Content,
@@ -510,6 +513,16 @@ export class GeminiChat {
       lastConfig = config;
       lastContentsToUse = contentsToUse;
 
+      const systemPath: string = path.join(process.cwd(), 'chat.txt');
+      fs.writeFileSync(
+        systemPath,
+        JSON.stringify(
+          { model: modelToUse, contents: contentsToUse, config },
+          null,
+          2,
+        ),
+        'utf-8',
+      );
       return this.config.getContentGenerator().generateContentStream(
         {
           model: modelToUse,
